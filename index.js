@@ -35,3 +35,38 @@
 
 // Event Listener for Fetch Button
 // - Attach the main event listener to the button to start the process
+
+
+
+const apiKey = "aff208ce8473b3311d6ce9a615c81702"
+
+
+
+function fetchWeatherData(city) {
+    const geoConversion = fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${apiKey}`)
+        .then( function(response) {
+            return response.json();
+        })
+        .then( function (city) {
+            console.log(`Weather data for ${city[0].name}`, city[0]);
+        })
+        .catch( function (error) {
+            console.log("Error fetching geo data:", error);
+        });
+    
+
+    fetch(`https://api.openweathermap.org/data/3.0/onecall/day_summary?lat=${city[0].lat}&lon=${city[0].lon}&date=2025-05-17&appid=${apiKey}`)
+        .then( function (response) {
+            console.log(response);
+        })
+        .catch( function (error) {
+            console.log("Error fetching weather data:", error);
+        });
+}
+
+function displayWeather(data) {
+    const cityWeather = document.getElementById("weather-display");
+}
+
+
+fetchWeatherData("New York");
