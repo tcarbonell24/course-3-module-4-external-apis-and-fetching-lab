@@ -38,31 +38,78 @@
 
 
 
-const apiKey = "aff208ce8473b3311d6ce9a615c81702"
+const API_KEY = "aff208ce8473b3311d6ce9a615c81702"
 
 
 
 function fetchWeatherData(city) {
-    const geoConversion = fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${apiKey}`)
+    //convert the city name string into a coordinate set
+    fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${API_KEY}`)
         .then( function(response) {
             return response.json();
         })
-        .then( function (city) {
-            console.log(`Weather data for ${city[0].name}`, city[0]);
+        .then( function (geoConversion) {
+            console.log(`City name: ${geoConversion[0].name}`);
+            console.log(`Lattitude of ${geoConversion[0].name} is ${geoConversion[0].lat}`)
+            console.log(`Longitude of ${geoConversion[0].name} is ${geoConversion[0].lon}`)
+            
+            const lat = geoConversion[0].lat;
+            const lon = geoConversion[0].lon;
+
+            console.log(lat, lon)
+            //use the geo converted lat and lon data to plug into the weather API to get the actual weather
+            return fetch(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`);
+        })
+        .then( function (response) {
+            return response.json();
+        })
+        .then( function (weatherData) {
+            var current = weatherData.current;
+            console.log(`Tempurature in ${city}: ${current.temp}`);
+            console.log(`Weather in ${city}: ${current.weather}`);
         })
         .catch( function (error) {
             console.log("Error fetching geo data:", error);
-        });
-    
-
-    fetch(`https://api.openweathermap.org/data/3.0/onecall/day_summary?lat=${city[0].lat}&lon=${city[0].lon}&date=2025-05-17&appid=${apiKey}`)
-        .then( function (response) {
-            console.log(response);
         })
-        .catch( function (error) {
-            console.log("Error fetching weather data:", error);
-        });
-}
+    }
+
+// function fetchWeatherData(cityName) {
+//   // Step 1: Get coordinates
+//   fetch('https://api.openweathermap.org/geo/1.0/direct?q=' + cityName + '&limit=1&appid=' + API_KEY)
+//     .then(function(response) {
+//       return response.json();
+//     })
+//     .then(function(geoData) {
+//       if (!geoData.length) {
+//         throw new Error('City not found');
+//       }
+
+//       var lat = geoData[0].lat;
+//       var lon = geoData[0].lon;
+
+//       // Step 2: Get weather data from One Call 3.0
+//       var oneCallUrl = 'https://api.openweathermap.org/data/3.0/onecall?lat=' + lat +
+//                        '&lon=' + lon +
+//                        '&units=metric&exclude=minutely,alerts&appid=' + API_KEY;
+
+//       return fetch(oneCallUrl);
+//     })
+//     .then(function(response) {
+//       return response.json();
+//     })
+//     .then(function(weatherData) {
+//       var current = weatherData.current;
+//       console.log('Weather in ' + cityName + ':');
+//       console.log('🌡️ Temp: ' + current.temp + '°C');
+//       console.log('💧 Humidity: ' + current.humidity + '%');
+//       console.log('🌬️ Wind: ' + current.wind_speed + ' m/s');
+//       console.log('🌥️ Condition: ' + current.weather[0].description);
+//     })
+//     .catch(function(error) {
+//       console.error('Error fetching weather:', error.message);
+//     });
+// }
+
 
 function displayWeather(data) {
     const cityWeather = document.getElementById("weather-display");
