@@ -44,6 +44,8 @@ const API_KEY = "aff208ce8473b3311d6ce9a615c81702"
 
 
 function fetchWeatherData(city) {
+
+    //call openWeather 2.5 API and save the response as weatherData
     const weatherData = fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`)
         .then( function(response) {
             if (!response.ok) {
@@ -54,6 +56,7 @@ function fetchWeatherData(city) {
         .then( function (weatherData) {
             console.log("Successful API call");
             console.log(weatherData.main.temp);
+            console.log(weatherData.weather[0].main);
             return weatherData;
         })
         .catch( function (error) {
@@ -68,11 +71,15 @@ function fetchWeatherData(city) {
 
 
 function displayWeather(data) {
+
+    //add the given weather data to the web page as a list
     const cityWeather = document.getElementById("weather-display");
     
     const htmlContent = `
-    <li> Tempurature: ${data.main.temp} °C</li>
-    <li> Feels like: ${data.main.temp} °C</li>
+    <li>Weather: ${data.weather[0].main}</li>
+    <li>Description: ${data.weather[0].description}</li>
+    <li>Tempurature: ${data.main.temp} °C</li>
+    <li>Feels like: ${data.main.temp} °C</li>
     `;
 
     cityWeather.innerHTML = htmlContent;
@@ -80,7 +87,7 @@ function displayWeather(data) {
 
 
 
-
+//button functionality
 document.getElementById("fetch-weather")
     .addEventListener("click", function() {
         console.log("button clicked");
