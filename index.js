@@ -44,18 +44,24 @@ const API_KEY = "aff208ce8473b3311d6ce9a615c81702"
 
 
 function fetchWeatherData(city) {
-    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`)
+    const weatherData = fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`)
         .then( function(response) {
-            console.log("Successful API call")
+            if (!response.ok) {
+                throw new Error("Network response not ok")
+            }
             return response.json();
         })
         .then( function (weatherData) {
-            var current = weatherData.main
-            console.log(current.temp)
+            console.log("Successful API call");
+            console.log(weatherData.main.temp);
+            return weatherData;
         })
         .catch( function (error) {
-            console.log("Error fetching geo data:", error);
+            console.log("Error fetching data:", error);
         })
+
+
+        return weatherData;
     }
 
 
@@ -63,7 +69,32 @@ function fetchWeatherData(city) {
 
 function displayWeather(data) {
     const cityWeather = document.getElementById("weather-display");
-}
+    
+    const htmlContent = `
+    <li> Tempurature: ${data.main.temp} °C</li>
+    <li> Feels like: ${data.main.temp} °C</li>
+    `;
+
+    cityWeather.innerHTML = htmlContent;
+};
 
 
-fetchWeatherData("New York");
+
+
+document.getElementById("fetch-weather")
+    .addEventListener("click", function() {
+        console.log("button clicked");
+        const city = document.getElementById("city-input").value.trim();
+        
+            if (city === "") {
+                alert("Please enter a city name");
+                return;
+            }
+
+        fetchWeatherData(city)
+            .then(function(weatherData) {
+                if (weatherData) {
+                    displayWeather(weatherData)
+                }
+            })
+        });
